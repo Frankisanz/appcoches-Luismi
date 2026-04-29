@@ -113,12 +113,18 @@ export default function KanbanPage() {
 
   React.useEffect(() => {
     let mounted = true;
-    LeadsService.getLeads().then((data) => {
-      if(mounted) {
-        setLeads(data);
-        setLoading(false);
-      }
-    });
+    LeadsService.getLeads()
+      .then((data) => {
+        if(mounted) {
+          setLeads(data);
+        }
+      })
+      .catch((err) => {
+        console.error("Error cargando leads:", err);
+      })
+      .finally(() => {
+        if(mounted) setLoading(false);
+      });
     return () => { mounted = false; };
   }, []);
 

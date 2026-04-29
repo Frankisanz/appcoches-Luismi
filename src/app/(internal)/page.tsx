@@ -43,11 +43,17 @@ export default function DashboardPage() {
   const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
-    Promise.all([LeadsService.getLeads(), VehiculosService.getVehiculos()]).then(([leadsData, vehiculosData]) => {
-      setLeads(leadsData);
-      setVehiculos(vehiculosData);
-      setLoading(false);
-    });
+    Promise.all([LeadsService.getLeads(), VehiculosService.getVehiculos()])
+      .then(([leadsData, vehiculosData]) => {
+        setLeads(leadsData);
+        setVehiculos(vehiculosData);
+      })
+      .catch((err) => {
+        console.error("Error cargando datos del dashboard:", err);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }, []);
 
   const stats = {

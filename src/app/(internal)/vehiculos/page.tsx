@@ -22,12 +22,18 @@ export default function VehiculosPage() {
 
   React.useEffect(() => {
     let mounted = true;
-    VehiculosService.getVehiculos().then((data) => {
-      if(mounted) {
-        setVehiculos(data);
-        setLoading(false);
-      }
-    });
+    VehiculosService.getVehiculos()
+      .then((data) => {
+        if(mounted) {
+          setVehiculos(data);
+        }
+      })
+      .catch((err) => {
+        console.error("Error cargando vehículos:", err);
+      })
+      .finally(() => {
+        if(mounted) setLoading(false);
+      });
     return () => { mounted = false; };
   }, []);
 

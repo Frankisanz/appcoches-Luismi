@@ -46,18 +46,23 @@ export default function InboxPage() {
   // Load contacts (leads) initially
   useEffect(() => {
     let mounted = true;
-    LeadsService.getLeads().then(leads => {
-      if(mounted) {
-        // Map all leads to ContactoInbox structure (dummy message count for now since no aggregation endpoint exists yet)
-        const mapped = leads.map(l => ({
-           lead: l,
-           mensajesNoLeidos: 0
-        }));
-        setContactos(mapped);
-        if (mapped.length > 0) setActiveContact(mapped[0]);
-        setLoading(false);
-      }
-    });
+    LeadsService.getLeads()
+      .then(leads => {
+        if(mounted) {
+          const mapped = leads.map(l => ({
+             lead: l,
+             mensajesNoLeidos: 0
+          }));
+          setContactos(mapped);
+          if (mapped.length > 0) setActiveContact(mapped[0]);
+        }
+      })
+      .catch((err) => {
+        console.error("Error cargando contactos:", err);
+      })
+      .finally(() => {
+        if(mounted) setLoading(false);
+      });
     return () => { mounted = false; };
   }, []);
 
@@ -65,9 +70,13 @@ export default function InboxPage() {
   useEffect(() => {
     let mounted = true;
     if (activeContact) {
-      MensajesService.getMensajesPorLead(activeContact.lead.id).then(msgs => {
-         if(mounted) setChatMessages(msgs);
-      });
+      MensajesService.getMensajesPorLead(activeContact.lead.id)
+        .then(msgs => {
+           if(mounted) setChatMessages(msgs);
+        })
+        .catch((err) => {
+          console.error("Error cargando mensajes:", err);
+        });
     }
     return () => { mounted = false; };
   }, [activeContact]);
