@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Search, Filter, Calendar, Settings2, ShieldCheck, MoreHorizontal, Fuel, Gauge, Cog } from "lucide-react";
+import { Search, Filter, Calendar, Settings2, ShieldCheck, MoreHorizontal, Fuel, Gauge, Cog, Plus } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { AddVehicleModal } from "@/components/add-vehicle-modal";
 import { VehiculosService } from "@/services/vehiculos.service";
 import type { Vehiculo, EstadoVehiculo } from "@/lib/types";
 
@@ -19,6 +20,15 @@ export default function VehiculosPage() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<EstadoVehiculo | "todos">("todos");
+  const [showAddModal, setShowAddModal] = useState(false);
+
+  const reloadVehiculos = useCallback(() => {
+    setLoading(true);
+    VehiculosService.getVehiculos()
+      .then((data) => setVehiculos(data))
+      .catch((err) => console.error("Error recargando:", err))
+      .finally(() => setLoading(false));
+  }, []);
 
   React.useEffect(() => {
     let mounted = true;
@@ -71,9 +81,12 @@ export default function VehiculosPage() {
               <Filter className="w-4 h-4" />
               <span className="hidden sm:inline">Filtros</span>
            </button>
-           <button className="px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium shadow-sm hover:bg-primary/90 transition-colors">
-              Añadir
-           </button>
+           <button 
+              onClick={() => setShowAddModal(true)}
+              className="px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium shadow-sm hover:bg-primary/90 transition-colors inline-flex items-center gap-1.5"
+            >
+              <Plus className="w-4 h-4" /> Añadir
+            </button>
         </div>
       </div>
 
@@ -189,6 +202,13 @@ export default function VehiculosPage() {
           </div>
         )}
       </div>
+
+      {/* Modal Añadir Vehículo */}
+      <AddVehicleModal 
+        open={showAddModal} 
+        onClose={() => setShowAddModal(false)} 
+        onSuccess={reloadVehiculos} 
+      />
     </div>
   );
 }
