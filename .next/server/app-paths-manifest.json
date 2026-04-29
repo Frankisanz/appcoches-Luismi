@@ -1,0 +1,9 @@
+{
+  "/_not-found/page": "app/_not-found/page.js",
+  "/api/webhooks/whatsapp/route": "app/api/webhooks/whatsapp/route.js",
+  "/login/page": "app/login/page.js",
+  "/(internal)/inbox/page": "app/(internal)/inbox/page.js",
+  "/(internal)/kanban/page": "app/(internal)/kanban/page.js",
+  "/(internal)/page": "app/(internal)/page.js",
+  "/(internal)/vehiculos/page": "app/(internal)/vehiculos/page.js"
+}
