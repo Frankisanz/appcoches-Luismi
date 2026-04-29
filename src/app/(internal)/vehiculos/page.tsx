@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Search, Filter, Calendar, Settings2, ShieldCheck, MoreHorizontal } from "lucide-react";
+import { Search, Filter, Calendar, Settings2, ShieldCheck, MoreHorizontal, Fuel, Gauge, Cog } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { VehiculosService } from "@/services/vehiculos.service";
 import type { Vehiculo, EstadoVehiculo } from "@/lib/types";
@@ -133,12 +133,30 @@ export default function VehiculosPage() {
                       </h3>
                       {car.detalles_extras && typeof car.detalles_extras.slogan === "string" && (
                         <p className="text-[13px] text-muted-foreground mt-2 leading-snug line-clamp-2">
-                          "{car.detalles_extras.slogan}"
+                          &ldquo;{car.detalles_extras.slogan}&rdquo;
                         </p>
                       )}
-                      <p className="text-xs text-muted-foreground flex items-center gap-1 mt-3 font-medium">
-                        <Calendar className="w-3.5 h-3.5" /> Año {car.año}
-                      </p>
+                      {/* Detail Chips */}
+                      <div className="flex flex-wrap items-center gap-1.5 mt-3">
+                        <span className="inline-flex items-center gap-1 text-[11px] font-medium text-muted-foreground bg-muted/60 rounded-md px-2 py-0.5">
+                          <Calendar className="w-3 h-3" /> {car.año}
+                        </span>
+                        {car.detalles_extras && typeof car.detalles_extras.km === "number" && (
+                          <span className="inline-flex items-center gap-1 text-[11px] font-medium text-muted-foreground bg-muted/60 rounded-md px-2 py-0.5">
+                            <Gauge className="w-3 h-3" /> {new Intl.NumberFormat("es-ES").format(car.detalles_extras.km as number)} km
+                          </span>
+                        )}
+                        {car.detalles_extras && typeof car.detalles_extras.combustible === "string" && (
+                          <span className="inline-flex items-center gap-1 text-[11px] font-medium text-muted-foreground bg-muted/60 rounded-md px-2 py-0.5">
+                            <Fuel className="w-3 h-3" /> {car.detalles_extras.combustible as string}
+                          </span>
+                        )}
+                        {car.detalles_extras && typeof car.detalles_extras.transmision === "string" && (
+                          <span className="inline-flex items-center gap-1 text-[11px] font-medium text-muted-foreground bg-muted/60 rounded-md px-2 py-0.5">
+                            <Cog className="w-3 h-3" /> {car.detalles_extras.transmision as string}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
 
