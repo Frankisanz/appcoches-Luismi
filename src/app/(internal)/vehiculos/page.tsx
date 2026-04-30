@@ -4,9 +4,10 @@ import React, { useState, useCallback } from "react";
 import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Search, Filter, Calendar, Settings2, ShieldCheck, MoreHorizontal, Fuel, Gauge, Cog, Plus } from "lucide-react";
+import { Search, Filter, Calendar, Settings2, ShieldCheck, MoreHorizontal, Fuel, Gauge, Cog, Plus, MessageCircle } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { AddVehicleModal } from "@/components/add-vehicle-modal";
+import { ContactVehicleModal } from "@/components/contact-vehicle-modal";
 import { VehiculosService } from "@/services/vehiculos.service";
 import type { Vehiculo, EstadoVehiculo } from "@/lib/types";
 
@@ -21,6 +22,7 @@ export default function VehiculosPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<EstadoVehiculo | "todos">("todos");
   const [showAddModal, setShowAddModal] = useState(false);
+  const [selectedVehiculo, setSelectedVehiculo] = useState<Vehiculo | null>(null);
 
   const reloadVehiculos = useCallback(() => {
     setLoading(true);
@@ -121,11 +123,15 @@ export default function VehiculosPage() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
             {filteredCars.map((car, i) => (
-              <Card key={car.id} className={`overflow-hidden border-border/50 group animate-scale-in stagger-${(i % 6) + 1}`}>
+              <Card 
+                key={car.id} 
+                className={`overflow-hidden border-border/50 group animate-scale-in stagger-${(i % 6) + 1} cursor-pointer transition-all duration-300 hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-1 hover:border-primary/30`}
+                onClick={() => setSelectedVehiculo(car)}
+              >
                 {/* Image Area */}
-                <div className="aspect-[4/3] bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 relative group-hover:opacity-90 transition-opacity">
+                <div className="aspect-[4/3] bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 relative overflow-hidden">
                   {car.imagen_url ? (
-                    <img src={car.imagen_url} alt={`${car.marca} ${car.modelo}`} className="w-full h-full object-cover" />
+                    <img src={car.imagen_url} alt={`${car.marca} ${car.modelo}`} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
                   ) : (
                     <div className="absolute inset-0 flex items-center justify-center">
                       <span className="text-4xl font-bold text-black/5 dark:text-white/5 uppercase tracking-tighter">
@@ -133,13 +139,23 @@ export default function VehiculosPage() {
                       </span>
                     </div>
                   )}
+                  {/* Hover Overlay CTA */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-end justify-center pb-6">
+                    <span className="inline-flex items-center gap-2 px-5 py-2.5 bg-white/95 dark:bg-white text-gray-900 rounded-full text-sm font-bold shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                      <MessageCircle className="w-4 h-4 text-green-600" />
+                      Contactar
+                    </span>
+                  </div>
                   {/* Status Badge */}
                   <div className="absolute top-3 left-3">
                     <Badge variant={car.estado as EstadoVehiculo} className="shadow-sm backdrop-blur-md bg-background/80">
                       {car.estado.toUpperCase()}
                     </Badge>
                   </div>
-                  <button className="absolute top-3 right-3 p-1.5 bg-background/80 backdrop-blur-md rounded-md text-muted-foreground hover:text-foreground opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button 
+                    className="absolute top-3 right-3 p-1.5 bg-background/80 backdrop-blur-md rounded-md text-muted-foreground hover:text-foreground opacity-0 group-hover:opacity-100 transition-opacity"
+                    onClick={(e) => e.stopPropagation()}
+                  >
                     <MoreHorizontal className="w-4 h-4" />
                   </button>
                 </div>
@@ -208,6 +224,12 @@ export default function VehiculosPage() {
         open={showAddModal} 
         onClose={() => setShowAddModal(false)} 
         onSuccess={reloadVehiculos} 
+      />
+
+      {/* Modal Contacto / CTA */}
+      <ContactVehicleModal 
+        vehiculo={selectedVehiculo} 
+        onClose={() => setSelectedVehiculo(null)} 
       />
     </div>
   );
